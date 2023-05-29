@@ -41,11 +41,20 @@ class Duck(ABC):
     swim: SwimBehavior
     fly: FlyBehavior
 
+    def setQuack(self, qb: QuackBehavior):
+        self.quack = qb
+
     def performQuack(self):
         self.quack.quack()
 
+    def setSwim(self, sb: SwimBehavior):
+        self.swim = sb
+
     def performSwim(self):
         self.swim.swim()
+
+    def setFly(self, fb: FlyBehavior):
+        self.fly = fb
 
     def performFly(self):
         self.fly.fly()
@@ -90,6 +99,9 @@ class RubberDuck(Duck):
 if __name__ == '__main__':
     duck1: Duck = MallardDuck()
     duck2: Duck = RubberDuck()
-    print(duck1.performFly())
-    print(duck2.performFly())
-    print(duck2.performQuack())
+    duck1.performFly()
+    duck2.performFly()
+    duck2.performQuack()
+    print("Rocket powered Mallard set dynamically")
+    duck1.setFly(FlyWithRocket())
+    duck1.performFly()
