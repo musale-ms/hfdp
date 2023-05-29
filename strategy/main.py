@@ -1,10 +1,5 @@
 from abc import ABC, abstractmethod
 
-class Duck(ABC):
-    @abstractmethod
-    def display(self):
-        raise NotImplementedError
-
 # Swimming, Quacking, Flying vary for the ducks
 # Behavior of ducks that is changed
 class FlyBehavior(ABC):
@@ -29,8 +24,46 @@ class FlyWithRocket(FlyBehavior):
     def fly(self):
         print("Duck flying with rocket engine")
 
+class AllSwim(SwimBehavior):
+    def swim(self):
+        print("All ducks swim")
+
+class NaturalQuack(QuackBehavior):
+    def quack(self):
+        print("Quacking...")
+
+class SqueakQuack(QuackBehavior):
+    def quack(self):
+        print("Quacking with the help of a battery")
+
+class Duck(ABC):
+    quack: QuackBehavior
+    swim: SwimBehavior
+    fly: FlyBehavior
+
+    def performQuack(self):
+        self.quack.quack()
+
+    def performSwim(self):
+        self.swim.swim()
+
+    def performFly(self):
+        self.fly.fly()
+
+    @abstractmethod
+    def display(self):
+        raise NotImplementedError
+
+
 # Duck types
-class MallardDuck(Duck, FlyWithWings):
+class MallardDuck(Duck):
+
+    def __init__(self):
+        super().__init__()
+        self.fly = FlyWithWings()
+        self.swim = AllSwim()
+        self.quack = NaturalQuack()
+
     def quack(self):
         print("Mallard duck quack")
 
@@ -40,7 +73,13 @@ class MallardDuck(Duck, FlyWithWings):
     def display(self):
         print("Mallard duck hello")
 
-class RubberDuck(Duck, FlyWithRocket):
+class RubberDuck(Duck):
+    def __init__(self):
+        super().__init__()
+        self.fly = FlyWithRocket()
+        self.swim = AllSwim()
+        self.quack = SqueakQuack()
+
     def display(self):
         print("Rubber duck hello")
 
@@ -51,5 +90,6 @@ class RubberDuck(Duck, FlyWithRocket):
 if __name__ == '__main__':
     duck1: Duck = MallardDuck()
     duck2: Duck = RubberDuck()
-    print(duck1.fly())
-    print(duck2.fly())
+    print(duck1.performFly())
+    print(duck2.performFly())
+    print(duck2.performQuack())
