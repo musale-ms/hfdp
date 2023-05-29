@@ -1,3 +1,7 @@
+'''
+Strategy pattern: define a family of algorithms and encapsulate each one
+then make them interchangeable.
+'''
 from abc import ABC, abstractmethod
 
 # Swimming, Quacking, Flying vary for the ducks
