@@ -8,6 +8,9 @@ class Observer(ABC):
     def update(self, temp: float, humidity: float, pressure: float):
         raise NotImplemented
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class DisplayElement(ABC):
     @abstractmethod
@@ -46,6 +49,7 @@ class WeatherData(Subject):
         self.observers.remove(o)
 
     def notifyObservers(self):
+        print(f"current observers {self.observers}")
         for o in self.observers:
             o.update(self.temperature, self.humidity, self.pressure)
 
@@ -85,9 +89,36 @@ class CurrentConditionsDisplay(DisplayElement, Observer):
         self.display()
 
 
+class HeatIndexDisplay(DisplayElement, Observer):
+    temperature: float
+    humidity: float
+    pressure: float
+    weather_data: WeatherData
+
+    def __init__(self, weather_data: WeatherData) -> None:
+        self.weather_data = weather_data
+        self.weather_data.registerObserver(self)
+
+    def display(self):
+        value = (self.temperature * self.humidity) / self.humidity
+        heat_index = f"Heat Index: {value} Musales"
+
+        print("=== HEAT INDEX ===")
+        print(heat_index, sep="\n")
+        print("=== END OF DISPLAY ===")
+
+    def update(self, temp: float, humidity: float, pressure: float):
+        self.temperature = temp
+        self.humidity = humidity
+        self.pressure = pressure
+
+        self.display()
+
+
 if __name__ == "__main__":
     weather_data = WeatherData()
     current_display = CurrentConditionsDisplay(weather_data=weather_data)
+    hi_display = HeatIndexDisplay(weather_data=weather_data)
 
     weather_data.setMeasurements(80, 24, 12)
     weather_data.notifyObservers()
