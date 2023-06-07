@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 import time
+import random
 
 
 class Observer(ABC):
@@ -197,48 +198,25 @@ class ForecastDisplay(DisplayElement, Observer2):
 
 
 if __name__ == "__main__":
-    # weather_data = WeatherData()
-    # current_display = CurrentConditionsDisplay(weather_data=weather_data)
-    # hi_display = HeatIndexDisplay(weather_data=weather_data)
+    weather_data = WeatherData()
+    current_display = CurrentConditionsDisplay(weather_data=weather_data)
+    hi_display = HeatIndexDisplay(weather_data=weather_data)
 
-    # weather_data.setMeasurements(80, 24, 12)
-    # weather_data.notifyObservers()
-    # time.sleep(5)
+    while True:
+        weather_data.setMeasurements(
+            random.uniform(-50.0, 50),
+            random.uniform(-100.0, 100.0),
+            random.uniform(-40.0, 40.0),
+        )
+        weather_data.notifyObservers()
+        time.sleep(3)
 
-    # weather_data.setMeasurements(74, 14, 34)
-    # weather_data.notifyObservers()
-    # time.sleep(5)
+    # weather_data = WeatherData2()
+    # forecast_display = ForecastDisplay(weather_data=weather_data)
 
-    # weather_data.setMeasurements(56, 53, 13)
-    # weather_data.notifyObservers()
-    # time.sleep(5)
-
-    # weather_data.setMeasurements(34, 24, 54)
-    # weather_data.notifyObservers()
-    # time.sleep(5)
-
-    weather_data = WeatherData2()
-    forecast_display = ForecastDisplay(weather_data=weather_data)
-
-    weather_data.temperature = 80
-    weather_data.humidity = 43
-    weather_data.pressure = 32
-    weather_data.notifyObservers()
-    time.sleep(5)
-
-    weather_data.temperature = 35
-    weather_data.humidity = 65
-    weather_data.pressure = 23
-    weather_data.notifyObservers()
-    time.sleep(5)
-
-    weather_data.temperature = 53
-    weather_data.humidity = 23
-    weather_data.pressure = 73
-    time.sleep(5)
-
-    weather_data.temperature = 56
-    weather_data.humidity = 65
-    weather_data.pressure = 23
-    weather_data.notifyObservers()
-    time.sleep(5)
+    # while True:
+    #     weather_data.temperature = random.uniform(-50.0, 50)
+    #     weather_data.humidity = random.uniform(-100.0, 100.0)
+    #     weather_data.pressure = random.uniform(-40.0, 40.0)
+    #     weather_data.notifyObservers()
+    #     time.sleep(3)
