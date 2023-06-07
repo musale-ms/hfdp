@@ -12,6 +12,15 @@ class Observer(ABC):
         return f"<{self.__class__.__name__}>"
 
 
+class Observer2(ABC):
+    @abstractmethod
+    def update(self):
+        raise NotImplemented
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
+
 class DisplayElement(ABC):
     @abstractmethod
     def display(self):
@@ -60,6 +69,56 @@ class WeatherData(Subject):
         self.temperature = temp
         self.humidity = humidity
         self.pressure = pressure
+
+
+class WeatherData2(Subject):
+    def __init__(self) -> None:
+        self._observers: List[Observer] = []
+        self._temperature: float = 0.0
+        self._humidity: float = 0.0
+        self._pressure: float = 0.0
+
+    @property
+    def observers(self):
+        return self._observers
+
+    @property
+    def temperature(self):
+        return self._temperature
+
+    @temperature.setter
+    def temperature(self, value):
+        self._temperature = value
+
+    @property
+    def humidity(self):
+        return self._humidity
+
+    @humidity.setter
+    def humidity(self, value):
+        self._humidity = value
+
+    @property
+    def pressure(self):
+        return self._pressure
+
+    @pressure.setter
+    def pressure(self, value):
+        self._pressure = value
+
+    def registerObserver(self, o: Observer):
+        self.observers.append(o)
+
+    def removeObserver(self, o: Observer):
+        self.observers.remove(o)
+
+    def notifyObservers(self):
+        print(f"current observers {self.observers}")
+        for o in self.observers:
+            o.update()
+
+    def measurementsChanged(self):
+        self.notifyObservers()
 
 
 class CurrentConditionsDisplay(DisplayElement, Observer):
@@ -115,23 +174,71 @@ class HeatIndexDisplay(DisplayElement, Observer):
         self.display()
 
 
+class ForecastDisplay(DisplayElement, Observer2):
+    def __init__(self, weather_data: WeatherData2) -> None:
+        self.weather_data: WeatherData2 = weather_data
+        self.weather_data.registerObserver(self)
+
+    def display(self):
+        temp = f"Temperature at: {self.temperature}o Celsius"
+        humidity = f"Humidity is: {self.humidity} Musales"
+        pressure = f"Pressure at: {self.pressure}"
+
+        print("=== WEATHER FORECAST ===")
+        print(temp, humidity, pressure, sep="\n")
+        print("=== END OF DISPLAY ===")
+
+    def update(self):
+        self.temperature = self.weather_data.temperature
+        self.humidity = self.weather_data.humidity
+        self.pressure = self.weather_data.pressure
+
+        self.display()
+
+
 if __name__ == "__main__":
-    weather_data = WeatherData()
-    current_display = CurrentConditionsDisplay(weather_data=weather_data)
-    hi_display = HeatIndexDisplay(weather_data=weather_data)
+    # weather_data = WeatherData()
+    # current_display = CurrentConditionsDisplay(weather_data=weather_data)
+    # hi_display = HeatIndexDisplay(weather_data=weather_data)
 
-    weather_data.setMeasurements(80, 24, 12)
+    # weather_data.setMeasurements(80, 24, 12)
+    # weather_data.notifyObservers()
+    # time.sleep(5)
+
+    # weather_data.setMeasurements(74, 14, 34)
+    # weather_data.notifyObservers()
+    # time.sleep(5)
+
+    # weather_data.setMeasurements(56, 53, 13)
+    # weather_data.notifyObservers()
+    # time.sleep(5)
+
+    # weather_data.setMeasurements(34, 24, 54)
+    # weather_data.notifyObservers()
+    # time.sleep(5)
+
+    weather_data = WeatherData2()
+    forecast_display = ForecastDisplay(weather_data=weather_data)
+
+    weather_data.temperature = 80
+    weather_data.humidity = 43
+    weather_data.pressure = 32
     weather_data.notifyObservers()
     time.sleep(5)
 
-    weather_data.setMeasurements(74, 14, 34)
+    weather_data.temperature = 35
+    weather_data.humidity = 65
+    weather_data.pressure = 23
     weather_data.notifyObservers()
     time.sleep(5)
 
-    weather_data.setMeasurements(56, 53, 13)
-    weather_data.notifyObservers()
+    weather_data.temperature = 53
+    weather_data.humidity = 23
+    weather_data.pressure = 73
     time.sleep(5)
 
-    weather_data.setMeasurements(34, 24, 54)
+    weather_data.temperature = 56
+    weather_data.humidity = 65
+    weather_data.pressure = 23
     weather_data.notifyObservers()
     time.sleep(5)
