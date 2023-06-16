@@ -3,6 +3,21 @@ Decorator pattern: attaches additional responsibilites to an object dynamically.
 """
 
 from abc import abstractmethod, ABC
+from enum import Enum
+from typing import Literal
+
+
+class Size(Enum):
+    """
+    Coffee sizes.
+    """
+
+    small = "tall"
+    medium = "grande"
+    large = "venti"
+
+
+CupSize = Literal[Size.small, Size.medium, Size.large]
 
 
 class Beverage(ABC):
@@ -11,9 +26,16 @@ class Beverage(ABC):
     """
 
     description: str
+    size: Size
 
     def get_description(self) -> str:
         return self.description
+
+    def set_size(self, size: Literal[Size.small, Size.medium, Size.large]) -> None:
+        self.size = size
+
+    def get_size(self) -> Size:
+        return self.size
 
     @abstractmethod
     def cost(self) -> float:
@@ -37,11 +59,15 @@ class Espresso(Beverage):
     Concrete component Espresso.
     """
 
-    def __init__(self) -> None:
+    size_costs = {Size.small: 0.10, Size.medium: 0.15, Size.large: 0.20}
+
+    def __init__(self, size: CupSize) -> None:
         self.description = "Espresso"
+        self.size = size
 
     def cost(self) -> float:
-        return 1.99
+        cup_cost: float = self.size_costs.get(self.get_size(), 0.0)
+        return 1.99 + cup_cost
 
 
 class HouseBlend(Beverage):
@@ -115,7 +141,7 @@ class Whip(CondimentDecorator):
 
 if __name__ == "__main__":
     # Espresso with no condiments
-    beverage: Beverage = Espresso()
+    beverage: Beverage = Espresso(size=Size.small)
     print(f"{beverage.get_description()} ${beverage.cost()}")
 
     # Double mocha soy latte with whip
@@ -126,3 +152,7 @@ if __name__ == "__main__":
     beverage_2 = Mocha(beverage_2)
     beverage_2 = Whip(beverage_2)
     print(f"{beverage_2.get_description()} ${beverage_2.cost()}")
+
+    small: Size = Size.small
+
+    print(small)
